@@ -16,7 +16,7 @@ index 0000000000000000000000000000000000000000..1a83afdc99c45e5d22ecf956373707cc
 +  window.EASEPICK_CONFIG = {
 +    API_HOST: 'https://v3.football.api-sports.io',
 +    API_KEY: '4253ea306614b724fd69bf093e2c5daa',
-+    RAPID_API_KEY: '',
++    RAPID_API_KEY: '9145414ab0mshd817d1eeffd0a6bp13e2bdjsnb887d87c667b',
 +    DEMO: false,
 +  };
 +}
