@@ -1,0 +1,183 @@
+diff --git a//dev/null b/index.html
+index 0000000000000000000000000000000000000000..f0e0a6e2d24f9eaacc7677664bb809182f55d215 100644
+--- a//dev/null
++++ b/index.html
+@@ -0,0 +1,170 @@
++<!DOCTYPE html>
++<html lang="en">
++  <head>
++    <meta charset="UTF-8" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <title>Easepick – Football Bet Selector</title>
++    <!--
++      .env.sample
++      EASEPICK_API_KEY=your_api_sports_key
++      EASEPICK_API_HOST=https://v3.football.api-sports.io
++      EASEPICK_RAPIDAPI_KEY=your_rapidapi_key_if_needed
++    -->
++    <link rel="stylesheet" href="styles.css" />
++    <link
++      rel="preconnect"
++      href="https://fonts.gstatic.com"
++      crossorigin
++    />
++    <link
++      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap"
++      rel="stylesheet"
++    />
++    <link
++      rel="icon"
++      type="image/png"
++      href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/26bd.png"
++    />
++  </head>
++  <body>
++    <header class="app-header" aria-label="Easepick header">
++      <div class="app-brand">
++        <img
++          src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/26bd.svg"
++          alt="Football icon"
++          class="brand-ball"
++        />
++        <h1>Easepick</h1>
++      </div>
++      <div class="league-badge" aria-live="polite">
++        <img
++          id="league-logo"
++          src="https://upload.wikimedia.org/wikipedia/en/d/df/Bundesliga_logo_%282017%29.svg"
++          alt="League logo"
++        />
++        <span id="league-name">Bundesliga</span>
++      </div>
++    </header>
++
++    <main>
++      <section class="control-panel" aria-label="Match selection controls">
++        <form id="query-form" class="query-form">
++          <div class="field">
++            <label for="query-date">Date</label>
++            <input
++              type="date"
++              id="query-date"
++              name="date"
++              required
++              aria-required="true"
++            />
++          </div>
++          <div class="field">
++            <label for="query-league">League ID</label>
++            <input
++              type="number"
++              id="query-league"
++              name="league"
++              placeholder="e.g. 78 for Bundesliga"
++              min="1"
++              required
++              aria-required="true"
++            />
++          </div>
++          <div class="field">
++            <label for="query-season">Season</label>
++            <input
++              type="number"
++              id="query-season"
++              name="season"
++              placeholder="2024"
++              min="2000"
++              required
++              aria-required="true"
++            />
++          </div>
++          <fieldset class="field market-fieldset">
++            <legend>Markets</legend>
++            <div class="market-grid">
++              <label><input type="checkbox" name="markets" value="1X2" checked /> Home / Draw / Away</label>
++              <label><input type="checkbox" name="markets" value="BTTS" checked /> BTTS</label>
++              <label><input type="checkbox" name="markets" value="OU25" checked /> Total Goals (O/U 2.5)</label>
++              <label><input type="checkbox" name="markets" value="DC" checked /> Double Chance</label>
++              <label><input type="checkbox" name="markets" value="CS" checked /> Correct Score</label>
++              <label><input type="checkbox" name="markets" value="DNB" checked /> Draw No Bet</label>
++            </div>
++          </fieldset>
++          <div class="field analyze-field">
++            <label for="analyze-command">Analyze command</label>
++            <input
++              type="text"
++              id="analyze-command"
++              name="analyze"
++              placeholder="ANALYZE: Team A vs Team B"
++              aria-describedby="analyze-help"
++            />
++            <small id="analyze-help">Restrict analysis to fixtures listed here.</small>
++          </div>
++          <div class="field timezone-toggle">
++            <label for="timezone-select">Timezone</label>
++            <select id="timezone-select" name="timezone">
++              <option value="utc" selected>UTC</option>
++              <option value="local">Local</option>
++            </select>
++          </div>
++          <button type="submit" id="get-matches" disabled>Get Matches</button>
++        </form>
++      </section>
++
++      <section class="status" aria-live="polite">
++        <div id="status-message"></div>
++      </section>
++
++      <section class="matches" aria-label="Match results">
++        <div id="matches-container" class="matches-container"></div>
++      </section>
++
++      <section class="analysis" aria-label="Analysis outputs">
++        <div class="analysis-header">
++          <nav class="mode-tabs" role="tablist">
++            <button class="mode-tab active" data-mode="B" role="tab" aria-selected="true">B Mode</button>
++            <button class="mode-tab" data-mode="C" role="tab" aria-selected="false">C Mode</button>
++            <button class="mode-tab" data-mode="D" role="tab" aria-selected="false">D Mode</button>
++          </nav>
++          <div class="analysis-actions">
++            <button id="export-csv" type="button">Export CSV</button>
++            <button id="copy-analysis" type="button">Copy summary</button>
++          </div>
++        </div>
++        <div id="analysis-content" class="analysis-content"></div>
++      </section>
++
++      <section class="final-pick" aria-label="Summary banner">
++        <h2>Final Picks Summary</h2>
++        <p class="rules">
++          Picks are generated when market and factor alignment has an edge ≥ 4.89% or when factors disagree but edge ≥ 4.89%. Derby fixtures are always flagged.
++        </p>
++        <div class="final-metrics">
++          <div class="metric">
++            <span class="metric-label">Picks</span>
++            <span id="pick-count" class="metric-value">0</span>
++          </div>
++          <div class="metric">
++            <span class="metric-label">Flags</span>
++            <span id="flag-count" class="metric-value">0</span>
++          </div>
++        </div>
++      </section>
++    </main>
++
++    <footer class="app-footer">
++      <p>
++        Client-side demo. Replace API keys via <code>window.EASEPICK_CONFIG</code> before use.
++        Documentation is embedded in <code>analysis.js</code> for extending models.
++      </p>
++    </footer>
++
++    <script>
++      window.EASEPICK_CONFIG = {
++        API_HOST: 'https://v3.football.api-sports.io',
++        API_KEY: '4253ea306614b724fd69bf093e2c5daa', // your API key
++        RAPID_API_KEY: '', // only if you use RapidAPI
++        DEMO: false        // set to false to use live data
++      };
++    </script>
++    <script type="module" src="scripts/config.js"></script>
++    <script type="module" src="scripts/app.js"></script>
++  </body>
++</html>
