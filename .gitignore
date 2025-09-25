@@ -1,25 +1,25 @@
-  echo # OS
-  echo .DS_Store
-  echo Thumbs.db
-  echo.
-  echo # Node / tooling
-  echo node_modules/
-  echo dist/
-  echo build/
-  echo .cache/
-  echo coverage/
-  echo.
-  echo # Env / keys
-  echo .env
-  echo .env.*
-  echo *.local
-  echo.
-  echo # Logs
-  echo *.log
-  echo npm-debug.log*
-  echo yarn-*.log*
-  echo pnpm-*.log*
-  echo.
-  echo # Editors
-  echo .vscode/
-  echo .idea/
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Dependencies / build outputs (in case you add tooling later)
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+
+# Environment & local overrides
+.env
+.env.*
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-*.log*
+pnpm-*.log*
+
+# Editor settings
+.vscode/
+.idea/
