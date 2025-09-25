@@ -199,27 +199,50 @@ index 0000000000000000000000000000000000000000..1d20fd9f14302f5ecc35645da47efcb2
 +    'Draw No Bet': 'DNB',
 +  };
 +  bookmakers.forEach((bookmaker) => {
-+    bookmaker.markets.forEach((market) => {
-+      const key = marketMap[market.name];
++    const bets = Array.isArray(bookmaker?.bets) ? bookmaker.bets : [];
++    bets.forEach((bet) => {
++      const key = marketMap[bet?.name];
 +      if (!key) return;
++
++      const values = Array.isArray(bet?.values) ? bet.values : [];
 +      if (key === 'OU') {
-+        const over = market.odds.find(
-+          (odd) => odd.handicap === '2.5' && (odd.name?.toLowerCase().includes('over') || odd.label?.toLowerCase().includes('over'))
-+        );
-+        const under = market.odds.find(
-+          (odd) => odd.handicap === '2.5' && (odd.name?.toLowerCase().includes('under') || odd.label?.toLowerCase().includes('under'))
-+        );
++        const over = values.find((value) => {
++          const selection = value?.value?.toLowerCase();
++          return value?.handicap === '2.5' && selection?.includes('over');
++        });
++        const under = values.find((value) => {
++          const selection = value?.value?.toLowerCase();
++          return value?.handicap === '2.5' && selection?.includes('under');
++        });
 +        if (over && under) {
-+          mapped.OU25 = [
-+            { label: `Over ${over.handicap}`, odd: Number(over.value ?? over.odd) },
-+            { label: `Under ${under.handicap}`, odd: Number(under.value ?? under.odd) },
-+          ];
++          const overOdd = Number(over?.odd);
++          const underOdd = Number(under?.odd);
++          const overLabel = `${over?.value ?? ''} ${over?.handicap ?? ''}`.trim();
++          const underLabel = `${under?.value ?? ''} ${under?.handicap ?? ''}`.trim();
++          if (overLabel && underLabel && !Number.isNaN(overOdd) && !Number.isNaN(underOdd)) {
++            mapped.OU25 = [
++              { label: overLabel, odd: overOdd },
++              { label: underLabel, odd: underOdd },
++            ];
++          }
 +        }
 +      } else {
-+        mapped[key] = market.odds.map((odd) => ({
-+          label: odd.handicap ? `${odd.handicap}` : odd.name,
-+          odd: Number(odd.value ?? odd.odd),
-+        }));
++        const selections = values
++          .map((value) => {
++            const label = value?.handicap
++              ? `${value?.value ?? ''} ${value.handicap}`.trim()
++              : value?.value;
++            const odd = Number(value?.odd);
++            if (!label || Number.isNaN(odd)) {
++              return null;
++            }
++            return { label, odd };
++          })
++          .filter(Boolean);
++
++        if (selections.length) {
++          mapped[key] = selections;
++        }
 +      }
 +    });
 +  });
